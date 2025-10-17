@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuttyStarter", "PuttyStarter.csproj", "{3DE09CA9-6391-2650-43DF-F29B42D9759D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DE09CA9-6391-2650-43DF-F29B42D9759D}.Debug|x64.ActiveCfg = Debug|x64
+		{3DE09CA9-6391-2650-43DF-F29B42D9759D}.Debug|x64.Build.0 = Debug|x64
+		{3DE09CA9-6391-2650-43DF-F29B42D9759D}.Release|x64.ActiveCfg = Release|x64
+		{3DE09CA9-6391-2650-43DF-F29B42D9759D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {81D670C6-E216-4807-BCF3-38D3EBEB0667}
+	EndGlobalSection
+EndGlobal
