@@ -55,3 +55,4 @@ nunit-*.xml
 
 # my own stuff
 publish/*
+.vs
