@@ -9,7 +9,7 @@ public enum AppTheme { Auto, Light, Dark }
 
 public sealed class AppConfig
 {
-    public string Version { get; set; } = "1.0.0";
+    public string Version { get; set; } = "1.1.0";
     public string Hotkey { get; set; } = "Ctrl+Alt+P";
     public AppTheme Theme { get; set; } = AppTheme.Auto;
     public bool SingleInstance { get; set; } = true;

@@ -7,7 +7,7 @@ namespace PuttyStarter;
 
 public class AppContextEx : ApplicationContext
 {
-    private readonly AppConfig _config;
+    private AppConfig _config;
     private readonly string _confPath;
     private readonly Logger _logger;
 
@@ -38,6 +38,12 @@ public class AppContextEx : ApplicationContext
         var miOpen = new ToolStripMenuItem("Open");
         miOpen.Click += (s, e) => ShowPicker();
 
+        var miRefresh = new ToolStripMenuItem("Reload config");
+        miRefresh.Click += (s, e) => RefreshConfig();
+
+        var miOpenLocation = new ToolStripMenuItem("Open location");
+        miOpenLocation.Click += (s, e) => OpenLocation();
+
         _miRunAtStartup = new ToolStripMenuItem("Run at startup")
         {
             Checked = RunAtStartup.Get(),
@@ -65,6 +71,8 @@ public class AppContextEx : ApplicationContext
         miExit.Click += (s, e) => ExitThread();
 
         cms.Items.Add(miOpen);
+        cms.Items.Add(miRefresh);
+        cms.Items.Add(miOpenLocation);
         cms.Items.Add(_miRunAtStartup);
         cms.Items.Add(miAbout);
         cms.Items.Add(new ToolStripSeparator());
@@ -88,6 +96,66 @@ public class AppContextEx : ApplicationContext
     }
 
     // ==== Helper methods that were missing ====
+    private void RefreshConfig()
+    {
+        try
+        {
+            var oldHotkey = _config.Hotkey;
+            var oldVersion = _config.Version;
+
+            var newCfg = AppConfig.LoadOrCreate(_confPath, _logger);
+            _config = newCfg;
+
+            if (!string.Equals(oldHotkey, _config.Hotkey, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!_hotkey.Rebind(_config.Hotkey))
+                {
+                    if (_config.ShowNotifications)
+                        _tray.ShowBalloonTip(3000, "PuttyStarter", "Hotkey is already in use.", ToolTipIcon.Warning);
+                    _logger.Warn("Hotkey rebind failed.");
+                }
+                else
+                {
+                    _logger.Info($"Hotkey rebind to '{_config.Hotkey}' succeeded.");
+                }
+            }
+
+            if (!string.Equals(oldVersion, _config.Version, StringComparison.Ordinal))
+                _tray.Text = $"PuttyStarter {_config.Version}";
+
+            if (_picker is { IsDisposed: false })
+            {
+                try { _picker.Close(); } catch { /* ignore */ }
+                _picker = null;
+            }
+
+            if (_config.ShowNotifications)
+                _tray.ShowBalloonTip(2000, "PuttyStarter", "Configuration reloaded.", ToolTipIcon.Info);
+
+            _logger.Info("Configuration reloaded.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Refresh failed: " + ex.Message);
+            MessageBox.Show("Failed to reload configuration.\n\n" + ex.Message, "PuttyStarter",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void OpenLocation()
+    {
+        try
+        {
+            var exeDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath)!;
+            Process.Start(new ProcessStartInfo("explorer.exe", $"\"{exeDir}\"") { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.Warn("OpenLocation failed: " + ex.Message);
+            MessageBox.Show("Unable to open location.\n\n" + ex.Message, "PuttyStarter",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
 
     private void ShowPicker()
     {
@@ -159,12 +227,12 @@ public class AppContextEx : ApplicationContext
 
         // Popis
         panel.Controls.Add(L($"Lightweight launcher for quick opening of PuTTY SSH sessions via a global hotkey ({_config.Hotkey})."));
-        panel.Controls.Add(L("")); // prázdnı øádek
+        panel.Controls.Add(L("")); // prï¿½zdnï¿½ ï¿½ï¿½dek
 
         // Author
         panel.Controls.Add(L("Author: jjakub-cz"));
 
-        // GitHub – SAMOSTATNİ LinkLabel
+        // GitHub ï¿½ SAMOSTATNï¿½ LinkLabel
         var url = "https://github.com/jjakub-cz/PuttyStarter";
         var llGit = new LinkLabel
         {
@@ -177,7 +245,7 @@ public class AppContextEx : ApplicationContext
             ForeColor = fg,
             Margin = new Padding(0, 0, 0, 0)
         };
-        // oznaèíme jen tu URL èást jako link (pøesnı rozsah)
+        // oznaï¿½ï¿½me jen tu URL ï¿½ï¿½st jako link (pï¿½esnï¿½ rozsah)
         int start = llGit.Text.IndexOf(url, StringComparison.Ordinal);
         if (start >= 0) llGit.Links.Add(start, url.Length, url);
         llGit.LinkClicked += (_, e) =>
@@ -196,7 +264,7 @@ public class AppContextEx : ApplicationContext
         };
         panel.Controls.Add(llGit);
 
-        // License – klidnì taky link zvláš (na LICENSE v repu)
+        // License ï¿½ klidnï¿½ taky link zvláš (na LICENSE v repu)
         panel.Controls.Add(L("License: MIT"));
 
         // Build info
@@ -211,7 +279,7 @@ public class AppContextEx : ApplicationContext
             Width = 90,
             Height= 36
         };
-        // spodní panel pro button, a hezky sedí vpravo
+        // spodnï¿½ panel pro button, aï¿½ hezky sedï¿½ vpravo
         var bottom = new Panel
         {
             Dock = DockStyle.Bottom,

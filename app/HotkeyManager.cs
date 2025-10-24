@@ -35,6 +35,21 @@ public sealed class HotkeyManager : NativeWindow, IDisposable
         return _registered;
     }
 
+    public bool Rebind(string hotkeyText)
+    {
+        try
+        {
+            if (_registered)
+            {
+                UnregisterHotKey(Handle, 1);
+                _registered = false;
+            }
+        }
+        catch { /* ignore */ }
+
+        return TryRegisterGlobalHotkey(hotkeyText);
+    }
+
     protected override void WndProc(ref Message m)
     {
         if (m.Msg == WM_HOTKEY)
